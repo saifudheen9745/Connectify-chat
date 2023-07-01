@@ -168,3 +168,11 @@ export const updateUserDetailsInDb = async (userId:Types.ObjectId,fullname:strin
     throw {error}
   }
 }
+
+export const updateImageUrlInDb = async(url:string,userId:Types.ObjectId)=>{
+  try {
+    return await usersModel.updateOne({_id:userId},{$set:{img:url}})
+  } catch (error) {
+    throw{error}
+  }
+}

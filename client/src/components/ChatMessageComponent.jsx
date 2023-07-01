@@ -1,13 +1,15 @@
 // import React from "react";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { resetUserDetails } from "../redux/slices/userSlice";
+import { resetUserDetails, userReducer } from "../redux/slices/userSlice";
 // import { useState } from "react";
 import InviteFriend from "./modals/InviteFriend";
 import FriendRequest from "./modals/FriendRequest";
 import { useState } from "react";
 import UserAccount from "./modals/UserAccount";
+  
+
 
 const chatObj = {
   name: "someone",
@@ -60,6 +62,8 @@ const chats = [
 
 // eslint-disable-next-line react/prop-types
 function ChatMessageComponent({data}) {
+  
+  const { userId,img } = useSelector(userReducer);
 
   const [
     inviteFriendModal,
@@ -108,7 +112,7 @@ function ChatMessageComponent({data}) {
             className="h-14 w-14 flex justify-center items-center rounded-full hover:cursor-pointer">
             <img
               className="w-16 rounded-full"
-              src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?w=2000"
+              src={img ? img : "https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?w=2000"}
               alt=""
             />
           </div>

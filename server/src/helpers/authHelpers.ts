@@ -25,14 +25,15 @@ export const userLoginHelper = async(userLoginData:userLoginTypes)=>{
         const isUserExist = await findByEmail(userLoginData?.email)
         if(isUserExist.length){
             const validUser = await compare(userLoginData?.password,isUserExist[0]?.password)
-            const {_id,fullname,email} = isUserExist?.[0]
+            const {_id,fullname,email,img} = isUserExist?.[0]
             if(validUser){
                 const accessToken = await genAccessToken(_id)
                 return {
                     _id,
                     fullname,
                     email,
-                    accessToken
+                    accessToken,
+                    img
                 }
             }else{
                 throw {message:"Invalid credentials"}
