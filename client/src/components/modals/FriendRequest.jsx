@@ -5,9 +5,12 @@ import { useEffect, useState } from "react";
 import { getFriendRequests, updateFriendRequestStatus } from "../../api/userApi";
 import { useSelector } from "react-redux";
 import { userReducer } from "../../redux/slices/userSlice";
+import Loader from "../Loader";
 
 function FriendRequest({ data }) {
   const [setFriendRequestModal] = data;
+  const [declineLoader,setDeclineLoader] = useState(false)
+  const [acceptLoader,setAcceptLoader] = useState(false)
   const [friendRequestList, setFriendRequestList] = useState([]);
   const [filteredFriendRequestList, setFilteredFriendRequestList] = useState([]); //For searching
   const [rerender, setRerender] = useState(false);
@@ -32,6 +35,11 @@ function FriendRequest({ data }) {
 
   const handleUpdateFriendtStatus = async (friendId,status) => {
     try {
+      if(status === 'accepted'){
+        setAcceptLoader(true)
+      }else{
+        setDeclineLoader(true)
+      }
       const res = await updateFriendRequestStatus(userId,friendId,status)
       console.log(res);
       if(res){
@@ -114,31 +122,37 @@ function FriendRequest({ data }) {
               {filteredFriendRequestList?.map((user) => {
                 return (
                   <div
-                  key={user._id}
-                  className=" h-16 m-2 bg-gray-200 hover:cursor-pointer hover:bg-gray-300 flex justify-between items-center px-3 rounded-2xl"
+                    key={user._id}
+                    className=" h-16 m-2 bg-gray-200 hover:cursor-pointer hover:bg-gray-300 flex justify-between items-center px-3 rounded-2xl"
                   >
                     <p className="text-xl text-dark text-center">
                       {user?.sender?.fullname}
                     </p>
 
-                    <div className="flex">
+                    <div className="flex w-full justify-end">
                       <button
                         onClick={() =>
-                          handleUpdateFriendtStatus(user?.sender?._id, "accepted")
+                          handleUpdateFriendtStatus(
+                            user?.sender?._id,
+                            "accepted"
+                          )
                         }
                         type="button"
-                        className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2"
+                        className="text-white w-1/6 flex justify-center bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2"
                       >
-                        Accept
+                        {acceptLoader ? <Loader /> : "Accept"}
                       </button>
                       <button
                         onClick={() =>
-                          handleUpdateFriendtStatus(user?.sender?._id, "declined")
+                          handleUpdateFriendtStatus(
+                            user?.sender?._id,
+                            "declined"
+                          )
                         }
                         type="button"
-                        className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2"
+                        className="text-white w-1/6 flex justify-center bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2"
                       >
-                        Decline
+                        {declineLoader ? <Loader /> : "Decline"}
                       </button>
                     </div>
                   </div>

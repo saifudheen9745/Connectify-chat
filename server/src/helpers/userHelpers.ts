@@ -1,5 +1,5 @@
 import { Types } from "mongoose"
-import { addFriendRequest, cancelFriendRequest, getAllUsersFromDb, getOneUserDetailsById, resendFriendRequestInDb, updateFriendRequest, updateImageUrlInDb, updateUserDetailsInDb } from "../repositories/userRepositories"
+import { addFriendRequest, cancelFriendRequest, getAllUsersFromDb, getOneUserDetailsById, resendFriendRequestInDb, unfriendAFriendInDb, updateFriendRequest, updateImageUrlInDb, updateUserDetailsInDb } from "../repositories/userRepositories"
 
 export const userGetAllUsersHelper = async()=>{
     try {
@@ -81,5 +81,13 @@ export const uploadProfilePicHelper = async(url:string,userId:string)=>{
         return updateImageUrlInDb(url,new Types.ObjectId(userId))
     } catch (error) {
         
+    }
+}
+
+export const unfriendAFriendHelper = async(userId:string,friendId:string)=>{
+    try {
+        return unfriendAFriendInDb(new Types.ObjectId(userId),new Types.ObjectId(friendId))
+    } catch (error) {
+        throw{error}
     }
 }

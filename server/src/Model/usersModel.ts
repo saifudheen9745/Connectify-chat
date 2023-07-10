@@ -39,13 +39,13 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.virtual('friends', {
-  ref: 'users',
-  localField: 'friendsList.receiver',
-  foreignField: '_id',
-  justOne: false,
-  options: { select: '_id fullname email' } // Include _id in the result
-});
+// userSchema.virtual('friends', {
+//   ref: 'users',
+//   localField: 'friendsList.receiver',
+//   foreignField: '_id',
+//   justOne: false,
+//   options: { select: '_id fullname email' } // Include _id in the result
+// });
 
 
 

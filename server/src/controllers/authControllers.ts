@@ -1,4 +1,4 @@
-import { Request, Response, response } from "express";
+import { Request, Response } from "express";
 import { userLoginHelper, userRegHelper } from "../helpers/authHelpers";
 
 export const doLogin = async(req:Request,res:Response)=>{

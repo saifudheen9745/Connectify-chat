@@ -1,54 +1,104 @@
 /* eslint-disable react/prop-types */
 // import React from 'react'
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userReducer } from "../redux/slices/userSlice";
 import { getAllFriends } from "../api/userApi";
 import { useEffect, useState } from "react";
+import { checkHaveImage, findFriend } from "../hooks/ImageHelper";
+import { rerenderReducer } from "../redux/slices/rerenderChatListSlice";
+import { createAChat } from "../api/chatApi";
+import { errorToast } from "../hooks/toasts";
+import {
+  setCurrentChat,
+  setCurrentChatId,
+  setCurrentMessages,
+} from "../redux/slices/currentChatSlice";
 
-function ChatListComponent({data}) {
+function ChatListComponent({ data }) {
+  const dispatch = useDispatch();
+
   const [setInviteFriendModal, setFriendRequestModal] = data;
-  const [friendsList,setFriendsList] = useState([])
-  const [filteredFriendsList,setFilteredFriendsList] = useState([])
-  const {fullname,userId} = useSelector(userReducer)
+  const [friendsList, setFriendsList] = useState([]);
+  const [filteredFriendsList, setFilteredFriendsList] = useState([]);
+  const { fullname, userId } = useSelector(userReducer);
+  const rerender = useSelector(rerenderReducer);
 
-
-  const getFriends = async(userId)=>{
-    const friends = await getAllFriends(userId)
+  const getFriends = async (userId) => {
+    const friends = await getAllFriends(userId);
     setFriendsList(friends?.response);
-    const filteredFriends = friends?.response?.friendsList?.filter((friend)=>friend?.friendshipStatus == "accepted")
-    setFilteredFriendsList(filteredFriends)
-  }
+    const filteredFriends = friends?.response?.friendsList?.filter(
+      (friend) => friend?.friendshipStatus == "accepted"
+    );
+    setFilteredFriendsList(filteredFriends);
+  };
 
-  useEffect(()=>{
-    getFriends(userId)
-  },[])
+  useEffect(() => {
+    getFriends(userId);
+  }, [rerender]);
 
   const hanldeInviteFriendclick = () => {
-    setInviteFriendModal(true)
+    setInviteFriendModal(true);
   };
 
   const handleFriendRequest = () => {
-    setFriendRequestModal(true)
-  }
+    setFriendRequestModal(true);
+  };
 
-  const handleFriendsSearch = (e)=>{
-    const regex = new RegExp(e.target.value)
-    const searchResult = friendsList?.friendsList?.filter((friend)=>{
-      if(friend?.receiver?._id == userId){
-        return regex.test(friend?.sender?.fullname)
-      }else{
+  const handleFriendsSearch = (e) => {
+    const regex = new RegExp(e.target.value);
+    const searchResult = friendsList?.friendsList?.filter((friend) => {
+      if (friend?.receiver?._id == userId) {
+        return regex.test(friend?.sender?.fullname);
+      } else {
         return regex.test(friend?.receiver?.fullname);
       }
-    })
+    });
     const finalSearchResult = searchResult?.filter(
       (friend) => friend?.friendshipStatus == "accepted"
     );
     setFilteredFriendsList(finalSearchResult);
-  }
+  };
+
+  const handleChatClick = async (elem) => {
+    let friendId;
+
+    if (elem?.receiver?._id === userId) {
+      friendId = elem?.sender?._id;
+    } else {
+      friendId = elem?.receiver?._id;
+    }
+
+    const chatObj = {
+      memberOne: userId,
+      memberTwo: friendId,
+    };
+
+    try {
+      const createChatResponse = await createAChat(chatObj);
+      if (createChatResponse?.created) {
+        const findTheFriendFromSelectedChat = async () => {
+          const selectedOne = await findFriend(
+            createChatResponse?.response?.existingChat,
+            userId
+          );
+          dispatch(
+            setCurrentChatId(createChatResponse?.response?.existingChat?._id)
+          );
+          dispatch(setCurrentChat(selectedOne));
+          dispatch(
+            setCurrentMessages(createChatResponse?.response?.chatMessages)
+          );
+        };
+        findTheFriendFromSelectedChat();
+      }
+    } catch (error) {
+      errorToast("Chat not created");
+    }
+  };
 
   return (
-    <div className="h-screen w-full">
+    <div className="h-screen w-full ">
       <div className=" h-11 w-full">
         <p className=" text-4xl text-center">Messages</p>
         <p className="text-center">{fullname ? fullname : ""}</p>
@@ -114,18 +164,27 @@ function ChatListComponent({data}) {
         {filteredFriendsList?.map((elem, i) => {
           return (
             <div
+              onClick={() => handleChatClick(elem)}
               key={i}
               className="m-2 flex gap-10 items-center border p-2 rounded-md hover:bg-gray-200 cursor-pointer"
             >
               <div className="h-14 w-14 flex justify-center items-center bg-red-500 rounded-full">
                 <img
                   className="rounded-full"
-                  src="https://c8.alamy.com/comp/2J3B2T7/3d-illustration-of-smiling-businessman-close-up-portrait-cute-cartoon-man-avatar-character-face-isolated-on-white-background-2J3B2T7.jpg"
+                  src={
+                    elem?.receiver?._id === userId
+                      ? checkHaveImage(elem?.sender)
+                      : checkHaveImage(elem?.receiver)
+                  }
                   alt=""
                 />
               </div>
               <div>
-                <p className="text-dark text-3xl">{elem?.receiver?._id === userId ? elem?.sender?.fullname : elem?.receiver?.fullname}</p>
+                <p className="text-dark text-3xl">
+                  {elem?.receiver?._id === userId
+                    ? elem?.sender?.fullname
+                    : elem?.receiver?.fullname}
+                </p>
               </div>
             </div>
           );

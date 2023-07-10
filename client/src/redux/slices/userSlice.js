@@ -46,4 +46,4 @@ export const { setUserDetails,resetUserDetails,setUpdatedDetails,setUpdatedImage
 //For the store
 export default userSlice.reducer
 //To access the state details
-export const userReducer = (state)=>state.persistedReducer
+export const userReducer = (state)=>state.persistedReducer.userReducer

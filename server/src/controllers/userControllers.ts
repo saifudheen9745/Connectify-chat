@@ -5,6 +5,7 @@ import {
   getAllFriendsOfUserHelper,
   resendFriendRequestHelper,
   sentFriendRequestHelper,
+  unfriendAFriendHelper,
   updateFriendRequestStatusHelper,
   updateUserDetailsHelper,
   uploadProfilePicHelper,
@@ -117,5 +118,16 @@ export const uploadProfilePic = async (req: Request, res: Response) => {
   } catch (error) {
 
     res.status(400).json({ upload: false , imageUrl: null });
+  }
+};
+
+export const unfriendAfriend = async (req: Request, res: Response) => {
+  try {
+    const response = unfriendAFriendHelper(req.body.userId,req.body.friendId)
+    res.status(200).json({deleted:true})
+  } catch (error) {
+    console.log(error);
+    
+    res.status(400).json({ deleted: false});
   }
 };

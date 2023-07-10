@@ -1,5 +1,5 @@
 import express, { Response } from 'express'
-import { cancelFriendRequest, getAllFriendRequest, getAllFriends, getAllUsers,resendFriendRequest,sentFriendRequest, updateFriendRequestStatus, updateUserDetails, uploadProfilePic } from '../controllers/userControllers'
+import { cancelFriendRequest, getAllFriendRequest, getAllFriends, getAllUsers,resendFriendRequest,sentFriendRequest, unfriendAfriend, updateFriendRequestStatus, updateUserDetails, uploadProfilePic } from '../controllers/userControllers'
 import { upload } from '../middlewares/imageUpload'
 import { MulterRequest } from '../Types/multerReqTypes'
 
@@ -23,6 +23,8 @@ router.post('/resendFriendRequest',resendFriendRequest)
 router.post('/updateUserDetails',updateUserDetails)
 //Update user profile picture
 router.post("/uploadProfilePic",upload.single('image'),uploadProfilePic);
+//Unfriend a friend
+router.post("/unfriendAFriend",unfriendAfriend);
 
 
 

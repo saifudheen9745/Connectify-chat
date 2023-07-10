@@ -61,6 +61,7 @@ function LoginComponent() {
         errorToast('All inputs are requied')
       }
     } catch (error) {
+      console.log(error);
       errorToast(error.msg);
     }
   }

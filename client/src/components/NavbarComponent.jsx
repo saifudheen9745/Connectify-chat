@@ -33,6 +33,7 @@ function NavbarComponent() {
           >
             Logout
           </button>
+          
         </div>
       </div>
     </nav>

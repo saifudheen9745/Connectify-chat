@@ -71,6 +71,16 @@ export const resentFriendRequest = async(userId,friendId) => {
     }
 }
 
+//To unfriend a friend
+export const unfriendAFriend = async(userId,friendId) => {
+    try {
+        const unfriendResponse = await api.post('/user/unfriendAFriend',{userId,friendId})
+        return unfriendResponse.data
+    } catch (error) {
+        throw{error}
+    }
+}
+
 //To update the user details
 export const updateUserDetails = async(userDetails) => {
     try {

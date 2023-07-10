@@ -57,8 +57,8 @@ export const getOneUserDetailsById = async (userId: Types.ObjectId) => {
   try {
     return await usersModel
       .findById(userId)
-      .populate("friendsList.receiver", "fullname email")
-      .populate("friendsList.sender", "fullname email");
+      .populate("friendsList.receiver", "fullname email img")
+      .populate("friendsList.sender", "fullname email img");
   } catch (error) {
 
     throw { error };
@@ -176,3 +176,60 @@ export const updateImageUrlInDb = async(url:string,userId:Types.ObjectId)=>{
     throw{error}
   }
 }
+
+export const unfriendAFriendInDb = async (
+  userId: Types.ObjectId,
+  friendId: Types.ObjectId
+) => {
+  try {
+    const user = await usersModel.updateOne(
+      {
+        _id: userId,
+        friendsList: {
+          $elemMatch: {
+            sender: { $in: [userId, friendId] },
+            receiver: { $in: [userId, friendId] },
+            friendshipStatus: "accepted",
+          },
+        },
+      },
+      {
+        $pull: {
+          friendsList: {
+            sender: { $in: [userId, friendId] },
+            receiver: { $in: [userId, friendId] },
+            friendshipStatus: "accepted",
+          },
+        },
+      }
+    );
+
+    const friend = await usersModel.updateOne(
+      {
+        _id: friendId,
+        friendsList: {
+          $elemMatch: {
+            sender: { $in: [userId, friendId] },
+            receiver: { $in: [userId, friendId] },
+            friendshipStatus: "accepted",
+          },
+        },
+      },
+      {
+        $pull: {
+          friendsList: {
+            sender: { $in: [userId, friendId] },
+            receiver: { $in: [userId, friendId] },
+            friendshipStatus: "accepted",
+          },
+        },
+      }
+    );
+
+    console.log(user, friend);
+    return;
+  } catch (error) {
+    console.log(error);
+    throw { error };
+  }
+};

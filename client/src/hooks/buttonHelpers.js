@@ -1,5 +1,6 @@
 export const isInvited = (userId, friendObj) => {
     let found = 0;
+   
     friendObj.friendsList.forEach((obj) => {
     if (
       obj.sender == userId &&
@@ -17,11 +18,12 @@ export const isInvited = (userId, friendObj) => {
 };
 
 export const isAccepted = (userId,friendObj) => {
+   console.log(friendObj);
     let accepted = false
     friendObj.friendsList.forEach((obj) => {
     if (
-      obj.sender == userId &&
-      obj.receiver == friendObj._id &&
+      (obj.sender == userId || obj.sender == friendObj._id) &&
+      (obj.receiver == friendObj._id || obj.receiver == userId) &&
       obj.friendshipStatus == "accepted"
     ) {
       accepted = true
